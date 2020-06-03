@@ -29,11 +29,11 @@ class _LoginState extends State<Login> {
 
   @override
   Widget build(BuildContext context) {
-    final user = Provider.of<UserProvider>(context);
+    final userProvider = Provider.of<UserProvider>(context);
     return Scaffold(
       backgroundColor: Colors.black,
       key: _key,
-      body: user.status == Status.Authenticating ? Loading() : Stack(
+      body: userProvider.status == Status.Authenticating ? Loading() : Stack(
 
         children: <Widget>[
 //          Image.asset(
@@ -68,7 +68,7 @@ class _LoginState extends State<Login> {
                           child: Padding(
                             padding: const EdgeInsets.only(left: 12.0),
                             child: TextFormField(
-                              controller: email,
+                              controller: userProvider.email,
                               decoration: InputDecoration(
                                 hintText: "Email",
                                 icon: Icon(Icons.email),
@@ -100,7 +100,7 @@ class _LoginState extends State<Login> {
                             child: Padding(
                               padding: const EdgeInsets.only(left: 12.0),
                               child: TextFormField(
-                                controller: password,
+                                controller: userProvider.password,
                                 decoration: InputDecoration(
                                   hintText: "Password",
                                   icon: Icon(Icons.lock_outline),
@@ -126,10 +126,18 @@ class _LoginState extends State<Login> {
                           elevation: 0.0,
                           child: MaterialButton(
                             onPressed: () async{
-                              if(formKey.currentState.validate()){
-                              if(!await user.signIn(email.text, password.text))
-                                _key.currentState.showSnackBar(SnackBar(content: Text("Sign in failed"),));
+                              if(!await userProvider.signIn()) {
+                                _key.currentState.showSnackBar(
+                                  SnackBar(content: Text("Sign in failed, please check your email and password"),)
+                                );
+                                return;
                               }
+                              userProvider.cleanControllers();
+                              changeScreenReplacement(context, HomePage());
+//                              if(formKey.currentState.validate()){
+//                              if(!await userProvider.signIn(email.text, password.text))
+//                                _key.currentState.showSnackBar(SnackBar(content: Text("Sign in failed"),));
+//                              }
                             },
                             minWidth: MediaQuery.of(context).size.width,
                             child: Text(
@@ -162,18 +170,18 @@ class _LoginState extends State<Login> {
                 ),
             ),
             ),
-          Visibility(
-            visible: true,
-            child: Center(
-              child: Container(
-                alignment: Alignment.center,
-                color: Colors.white.withOpacity(0.7),
-                child: CircularProgressIndicator(
-                  valueColor: AlwaysStoppedAnimation<Color>(Colors.red),
-                ),
-              ),
-            ),
-          )
+//          Visibility(
+//            visible: true,
+//            child: Center(
+//              child: Container(
+//                alignment: Alignment.center,
+//                color: Colors.white.withOpacity(0.7),
+//                child: CircularProgressIndicator(
+//                  valueColor: AlwaysStoppedAnimation<Color>(Colors.red),
+//                ),
+//              ),
+//            ),
+//          )
         ],
       ),
     );

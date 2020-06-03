@@ -1,4 +1,7 @@
+import 'package:ecommerce/commons/common.dart';
+import 'package:ecommerce/commons/loading.dart';
 import 'package:ecommerce/pages/login.dart';
+import 'package:ecommerce/provider/app_provider.dart';
 import 'package:ecommerce/provider/user_provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -16,9 +19,12 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+
+  TextEditingController _searchController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     final user = Provider.of<UserProvider>(context);
+    AppProvider appProvider = Provider.of<AppProvider>(context);
     Widget image_carousel = new Container(
       height: 200.0,
       child: new Carousel(
@@ -31,24 +37,42 @@ class _HomePageState extends State<HomePage> {
           AssetImage('images/w3.jpeg'),
           AssetImage('images/w4.jpeg'),
         ],
-        autoplay: false,
-//      animationCurve: Curves.fastOutSlowIn,
-//      animationDuration: Duration(milliseconds: 1000),
+        autoplay:true,
+        dotColor: Colors.transparent ,
+        animationCurve: Curves.fastOutSlowIn,
+        animationDuration: Duration(milliseconds: 1000),
         dotSize: 4.0,
         indicatorBgPadding: 2.0,
         dotBgColor: Colors.transparent,
       ),
     );
     return Scaffold(
-      backgroundColor: Colors.black,
       appBar: new AppBar(
+        iconTheme: IconThemeData(color: deepOrange),
         elevation: 0.0,
-        backgroundColor: Colors.transparent,
+        backgroundColor: Colors.white,
         centerTitle: true,
-        title: Text('Maen'),
+        title: Material(
+          borderRadius: BorderRadius.circular(8.0),
+          color: Colors.grey[50],
+          elevation: 0.0,
+            child: TextFormField(
+              controller: _searchController,
+              decoration: InputDecoration(
+              hintText: "Search",
+              border: InputBorder.none,
+              ),
+              validator: (value) {
+              if (value.isEmpty) {
+              return "The search field cannot be empty";
+              }
+              return null;
+              },),
+
+        ),
         actions: <Widget>[
-          new IconButton(icon: Icon(Icons.search, color: Colors.white,), onPressed: (){}),
-          new IconButton(icon: Icon(Icons.shopping_cart, color: Colors.white,), onPressed: (){
+          new IconButton(icon: Icon(Icons.search, color: Colors.deepOrange,), onPressed: (){}),
+          new IconButton(icon: Icon(Icons.shopping_cart, color: Colors.deepOrange,), onPressed: (){
             Navigator.push(context, MaterialPageRoute(builder: (context) => new Cart()));
           }),
         ],
@@ -137,9 +161,9 @@ class _HomePageState extends State<HomePage> {
       ),
       body: new Column(
         children: <Widget>[
-          //image carousel begin
-          image_carousel,
           // padding widget
+          //image carousel
+          image_carousel,
           new Padding(padding: const EdgeInsets.all(8.0),
             child: Container(
                 margin: EdgeInsets.all(8.0),
@@ -163,6 +187,8 @@ class _HomePageState extends State<HomePage> {
                 )
             ),
           ),
+
+          Text(appProvider.featureProducts.length.toString(), style: TextStyle(color: black),),
           //grid view
 
           //coding for the products
